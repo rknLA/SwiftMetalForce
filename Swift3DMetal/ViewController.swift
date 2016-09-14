@@ -22,7 +22,7 @@ struct Uniforms {
 
 let kInflightCommandBuffers = 3
 
-let kVertexDistanceInterval: CGFloat = 30
+let kVertexDistanceInterval: CGFloat = 10
 
 
 class ViewController: UIViewController {
@@ -186,6 +186,8 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        self.view.isMultipleTouchEnabled = true
+
         self.view.backgroundColor = UIColor.clear
 
         self.metalInit()
@@ -334,7 +336,7 @@ class ViewController: UIViewController {
                             touch3: touchFloats[2],
                             touch4: touchFloats[3],
                             touch5: touchFloats[4],
-                            relevanceRange: float4([0.6,0,0,0]))
+                            relevanceRange: float4([2.0,0,0,0]))
 
     }
 
@@ -347,7 +349,7 @@ class ViewController: UIViewController {
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        print("moved touches! \(touches)")
+        //print("moved touches! \(touches)")
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
