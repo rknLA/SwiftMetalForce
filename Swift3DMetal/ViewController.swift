@@ -15,20 +15,9 @@ struct Uniforms {
     var rotation_matrix: matrix_float4x4
 }
 
-/*
-var vertexData: [CFloat] = [
-     1.0, -1.0, 0.5, 1.0,       1.0, 0.0, 0.0, 1.0,
-    -1.0, -1.0, 0.5, 1.0,       0.0, 1.0, 0.0, 1.0,
-    -1.0,  1.0, 0.5, 1.0,       0.0, 0.0, 1.0, 1.0,
-
-     1.0,  1.0, 0.0, 1.0,       1.0, 1.0, 0.0, 1.0,
-     1.0, -1.0, 0.0, 1.0,       1.0, 0.0, 0.0, 1.0,
-    -1.0,  1.0, 0.0, 1.0,       0.0, 0.0, 1.0, 1.0,
-]*/
-
 let kInflightCommandBuffers = 3
 
-let kVertexDistanceInterval: CGFloat = 20
+let kVertexDistanceInterval: CGFloat = 30
 
 class ViewController: UIViewController {
 
@@ -133,26 +122,26 @@ class ViewController: UIViewController {
                         _vertexData!.append(contentsOf: [
                             xPos,               yPos,           CFloat(0.5), CFloat(1.0), 1.0, 0.0, 0.0, 1.0,
                             xPos - halfXStride, yPos - yStride, CFloat(0.5), CFloat(1.0), 1.0, 1.0, 0.0, 1.0,
-                            xPos + halfXStride, yPos - yStride, CFloat(0.5), CFloat(1.0), 0.0, 0.0, 1.0, 1.0]);
+                            xPos + halfXStride, yPos - yStride, CFloat(0.5), CFloat(1.0), 0.5, 1.0, 1.0, 1.0]);
                         _vertexCount += 3
 
                         // upper right triangle
                         _vertexData!.append(contentsOf: [
-                            xPos,               yPos,           CFloat(0.5), CFloat(1.0), 1.0, 0.0, 0.0, 1.0,
-                            xPos + halfXStride, yPos - yStride, CFloat(0.5), CFloat(1.0), 1.0, 1.0, 0.0, 1.0,
+                            xPos,               yPos,           CFloat(0.5), CFloat(1.0), 1.0, 1.0, 0.0, 1.0,
+                            xPos + halfXStride, yPos - yStride, CFloat(0.5), CFloat(1.0), 1.0, 1.0, 1.0, 1.0,
                             xPos + xStride,     yPos,           CFloat(0.5), CFloat(1.0), 1.0, 0.0, 0.0, 1.0]);
                         _vertexCount += 3
 
                         // lower right triangle
                         _vertexData!.append(contentsOf: [
                             xPos,               yPos,           CFloat(0.5), CFloat(1.0), 1.0, 0.0, 0.0, 1.0,
-                            xPos + halfXStride, yPos + yStride, CFloat(0.5), CFloat(1.0), 1.0, 1.0, 0.0, 1.0,
+                            xPos + halfXStride, yPos + yStride, CFloat(0.5), CFloat(1.0), 1.0, 1.0, 1.0, 1.0,
                             xPos + xStride,     yPos,           CFloat(0.5), CFloat(1.0), 1.0, 0.0, 0.0, 1.0]);
                         _vertexCount += 3
 
                         // purely below triangle
                         _vertexData!.append(contentsOf: [
-                            xPos,               yPos,           CFloat(0.5), CFloat(1.0), 1.0, 0.0, 0.0, 1.0,
+                            xPos,               yPos,           CFloat(0.5), CFloat(1.0), 1.0, 0.0, 1.0, 1.0,
                             xPos - halfXStride, yPos + yStride, CFloat(0.5), CFloat(1.0), 1.0, 1.0, 0.0, 1.0,
                             xPos + halfXStride, yPos + yStride, CFloat(0.5), CFloat(1.0), 0.0, 0.0, 1.0, 1.0]);
                         _vertexCount += 3
