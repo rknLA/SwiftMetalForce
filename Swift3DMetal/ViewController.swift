@@ -22,8 +22,7 @@ struct Uniforms {
 
 let kInflightCommandBuffers = 3
 
-let kVertexDistanceInterval: CGFloat = 10
-
+let kVertexDistanceInterval: CGFloat = 1
 
 class ViewController: UIViewController {
 
@@ -336,7 +335,7 @@ class ViewController: UIViewController {
                             touch3: touchFloats[2],
                             touch4: touchFloats[3],
                             touch5: touchFloats[4],
-                            relevanceRange: float4([2.0,0,0,0]))
+                            relevanceRange: float4([0.4,0,0,0]))
 
     }
 

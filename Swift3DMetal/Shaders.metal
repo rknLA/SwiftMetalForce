@@ -45,8 +45,9 @@ vertex VertexOut vertex_func(device VertexIn *vertices [[buffer(0)]],
 {
     VertexOut out;
     out.position = vertices[vid].position;
+    out.force = 0.0;
 
-    float zpos = 1.0;
+    float zpos = 0.0;
 
     float4 position2d = float4(out.position[0], out.position[1], 0, 0);
     float4 touches[] = {uniforms.touch1, uniforms.touch2, uniforms.touch3, uniforms.touch4, uniforms.touch5};
@@ -65,7 +66,7 @@ vertex VertexOut vertex_func(device VertexIn *vertices [[buffer(0)]],
         float dist = distance(position2d, touchPos2d);
         float normalized_distance = dist / relevanceRange;
         if (dist < relevanceRange) {
-            zpos -= (touches[i][2] * (1 - normalized_distance));
+            zpos += (touches[i][2] * (1 - normalized_distance));
         }
         out_dist = max(out_dist, dist / relevanceRange);
     }
@@ -83,11 +84,18 @@ fragment half4 fragment_func(VertexOut vert [[stage_in]])
 
     half3 color = 0.0;
 
-    if (vert.force != 1.0) {
+    if (vert.force != 0.0) {
         color.r = cos(kPi * vert.force * vert.force * vert.force * vert.position[1]);
-        color.g = sin(1.1 * kPi * vert.force + k2Pi3 / vert.position[2]);
+        color.g = sin(1.1 * kPi * vert.force + k2Pi3 / vert.force);
         color.b = sin(3.3 * kPi * vert.force * vert.position[0]);
     }
 
-    return half4(color.r, color.g, color.b, 1.0);
+    half alpha = 1.0;
+    if (vert.dist >= 0.5) {
+        half halfDist = half(vert.dist - 0.5);
+        halfDist = 1 - 2 * halfDist;
+        alpha = log(halfDist);
+    }
+
+    return half4(color.r, color.g, color.b, alpha);
 }
