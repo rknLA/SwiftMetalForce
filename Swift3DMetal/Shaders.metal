@@ -54,7 +54,7 @@ vertex VertexOut vertex_func(device VertexIn *vertices [[buffer(0)]],
 
         float dist = distance(position2d, touchPos2d);
         if (dist < relevanceRange) {
-            zpos -= (touches[i][2] * (1 - dist / relevanceRange));
+            zpos -= (2 * touches[i][2] * (1 - (dist / relevanceRange)));
         }
     }
 
