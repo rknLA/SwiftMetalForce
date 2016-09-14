@@ -36,6 +36,7 @@ typedef struct {
     float4 position [[position]];
     half4 color;
     float dist;
+    float force;
 } VertexOut;
 
 vertex VertexOut vertex_func(device VertexIn *vertices [[buffer(0)]],
@@ -69,8 +70,8 @@ vertex VertexOut vertex_func(device VertexIn *vertices [[buffer(0)]],
         out_dist = max(out_dist, dist / relevanceRange);
     }
 
-    out.position[2] = zpos;
     out.dist = out_dist;
+    out.force = zpos;
 
     //out.color = half4(vertices[vid].color);
     out.color = half4(0.2, 0.2, 0.2, 1.0);
@@ -82,10 +83,10 @@ fragment half4 fragment_func(VertexOut vert [[stage_in]])
 
     half3 color = 0.0;
 
-    if (vert.position[2] != 1.0) {
-        color.r = cos(kPi * vert.position[2] * vert.position[2] * vert.position[2] * vert.position[1]);
-        color.g = sin(1.1 * kPi * vert.position[2] + k2Pi3 / vert.position[2]);
-        color.b = sin(3.3 * kPi * vert.position[2] * vert.position[0]);
+    if (vert.force != 1.0) {
+        color.r = cos(kPi * vert.force * vert.force * vert.force * vert.position[1]);
+        color.g = sin(1.1 * kPi * vert.force + k2Pi3 / vert.position[2]);
+        color.b = sin(3.3 * kPi * vert.force * vert.position[0]);
     }
 
     return half4(color.r, color.g, color.b, 1.0);
