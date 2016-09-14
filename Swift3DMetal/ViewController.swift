@@ -12,12 +12,18 @@ import simd
 import QuartzCore.CAMetalLayer
 
 struct Uniforms {
-    var rotation_matrix: matrix_float4x4
+    var touch1: float4
+    var touch2: float4
+    var touch3: float4
+    var touch4: float4
+    var touch5: float4
+    var relevanceRange: float4
 }
 
 let kInflightCommandBuffers = 3
 
 let kVertexDistanceInterval: CGFloat = 30
+
 
 class ViewController: UIViewController {
 
@@ -28,6 +34,7 @@ class ViewController: UIViewController {
     var pipelineState: MTLRenderPipelineState?
     var bufferSemaphor: DispatchSemaphore?
 
+    var uniforms: Uniforms?
     var uniformBuffer: MTLBuffer?
     var vertexBuffer: MTLBuffer?
 
@@ -228,6 +235,8 @@ class ViewController: UIViewController {
     }
 
     func setupPipeline() {
+        uniformBuffer = device!.makeBuffer(length: MemoryLayout<Uniforms>.size, options: .cpuCacheModeWriteCombined)
+
         let vertexFunction = library!.makeFunction(name: "vertex_func")
         let fragmentFunction = library!.makeFunction(name: "fragment_func")
 
@@ -253,6 +262,10 @@ class ViewController: UIViewController {
     }
 
     func render() {
+        // update the uniforms
+        self.updateUniforms()
+        let uniformPtr = uniformBuffer?.contents()
+        memcpy(uniformPtr!, &uniforms, MemoryLayout<Uniforms>.size)
 
         bufferSemaphor?.wait()
 
@@ -268,6 +281,7 @@ class ViewController: UIViewController {
         let encoder = commandBuffer?.makeRenderCommandEncoder(descriptor: renderPassDescriptor)
         encoder?.setRenderPipelineState(pipelineState!)
         encoder?.setVertexBuffer(vertexBuffer, offset: 0, at: 0)
+        encoder?.setVertexBuffer(uniformBuffer, offset: 0, at: 1)
         encoder?.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: _vertexCount)
         encoder?.endEncoding()
 
@@ -279,9 +293,45 @@ class ViewController: UIViewController {
         commandBuffer?.commit()
     }
 
+    func updateUniforms() {
+        var i = 0
+        var touchFloats: [float4] = [float4([0,0,0,0]),
+                                     float4([0,0,0,0]),
+                                     float4([0,0,0,0]),
+                                     float4([0,0,0,0]),
+                                     float4([0,0,0,0])]
+        for touch in activeTouches {
+            if i >= 5 {
+                print("more than 5 touches, skipping the last ones!")
+                break
+            }
+
+            let touchLoc = touch.location(in: self.view)
+            // touch x is (xpos / width) * 2 - 1
+            let touchX = CFloat(2 * (touchLoc.x / self.view.bounds.width) - 1)
+            let touchY = CFloat(-2 * (touchLoc.y / self.view.bounds.height) + 1)
+            let touchZ = CFloat(touch.force / touch.maximumPossibleForce)
+
+            touchFloats[i] = float4([touchX, touchY, touchZ, 0])
+
+            i += 1
+        }
+
+        uniforms = Uniforms(touch1: touchFloats[0],
+                            touch2: touchFloats[1],
+                            touch3: touchFloats[2],
+                            touch4: touchFloats[3],
+                            touch5: touchFloats[4],
+                            relevanceRange: float4([0.6,0,0,0]))
+
+    }
+
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         print("new touches! \(touches)")
+        for touch in touches {
+            activeTouches.append(touch)
+        }
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -290,10 +340,20 @@ class ViewController: UIViewController {
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         print("ended touches! \(touches)")
+        for touch in touches {
+            if let ix = activeTouches.index(of: touch) {
+                activeTouches.remove(at: ix)
+            }
+        }
     }
 
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         print("cancelled touches! \(touches)")
+        for touch in touches {
+            if let ix = activeTouches.index(of: touch) {
+                activeTouches.remove(at: ix)
+            }
+        }
     }
 
 }
