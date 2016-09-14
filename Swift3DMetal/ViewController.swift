@@ -32,6 +32,8 @@ class ViewController: UIViewController {
     var commandQueue: MTLCommandQueue?
     var library: MTLLibrary?
     var pipelineState: MTLRenderPipelineState?
+    var depthStencilState: MTLDepthStencilState?
+
     var bufferSemaphor: DispatchSemaphore?
 
     var uniforms: Uniforms?
@@ -231,6 +233,11 @@ class ViewController: UIViewController {
 
         self.view.contentScaleFactor = UIScreen.main.scale
 
+        let depthStencilDesc = MTLDepthStencilDescriptor()
+        depthStencilDesc.depthCompareFunction = .lessEqual
+        depthStencilDesc.isDepthWriteEnabled = true
+        depthStencilState = device!.makeDepthStencilState(descriptor: depthStencilDesc)
+
         print("OK initialized metal")
     }
 
@@ -282,6 +289,11 @@ class ViewController: UIViewController {
         encoder?.setRenderPipelineState(pipelineState!)
         encoder?.setVertexBuffer(vertexBuffer, offset: 0, at: 0)
         encoder?.setVertexBuffer(uniformBuffer, offset: 0, at: 1)
+
+        encoder?.setDepthStencilState(depthStencilState!)
+        encoder?.setFrontFacing(.counterClockwise)
+        encoder?.setCullMode(.none)
+
         encoder?.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: _vertexCount)
         encoder?.endEncoding()
 

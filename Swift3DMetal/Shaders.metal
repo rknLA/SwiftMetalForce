@@ -38,7 +38,7 @@ vertex VertexOut vertex_func(device VertexIn *vertices [[buffer(0)]],
     VertexOut out;
     out.position = vertices[vid].position;
 
-    float zpos = out.position[2];
+    float zpos = 0.0;
 
     float4 position2d = float4(out.position[0], out.position[1], 0, 0);
     float4 touches[] = {uniforms.touch1, uniforms.touch2, uniforms.touch3, uniforms.touch4, uniforms.touch5};
@@ -54,7 +54,7 @@ vertex VertexOut vertex_func(device VertexIn *vertices [[buffer(0)]],
 
         float dist = distance(position2d, touchPos2d);
         if (dist < relevanceRange) {
-            zpos -= (2 * touches[i][2] * (1 - (dist / relevanceRange)));
+            zpos -= (5 * touches[i][2] * (1 - (dist / relevanceRange)));
         }
     }
 
